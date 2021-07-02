@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
     <link rel="stylesheet" href="style.css" media="all">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous">
     </head>
     <body>
       <canvas class="particle-section"></canvas>
@@ -13,6 +14,9 @@
         <input type="number" class="input" id="input-amount">
         <p class="field-header">invoice id</p>
         <input type="text" class="input" id="input-invoiceid">
+      </div>
+      <div class="button-refresh" onclick="resetStorage();">
+        <i class="fa fa-retweet"></i>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/particlesjs@2.2.3/dist/particles.min.js" integrity="sha256-cy35RxCREfCgW7nc5h5HlCw5eEF4JKc9O+mb9BN07kY=" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.3/dist/easy.qrcode.min.js" integrity="sha256-Z6PVOqJTVgyK+MUl+yuaDQJGCJ6N05pzzRHrY0FD0Cg=" crossorigin="anonymous"></script>
@@ -31,6 +35,11 @@
           var email;
           var photo;
           var photoType;
+          
+          function resetStorage() {
+	    localStorage.clear();
+	    location.reload(true);
+          }
 
           function updateQr() {
               var length = window.innerWidth * 0.25;
