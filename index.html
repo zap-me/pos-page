@@ -29,7 +29,6 @@
 	  const URL_BASE = "https://premio-demo.caprover.acuerdo.dev/"
 	  const WS_URL = "https://premio-demo.caprover.acuerdo.dev/paydb"
 
-	  const socket = io(WS_URL);
           const REBATE_FACTOR = 0.05;
           var qrCodeObj = null;
           var email;
@@ -62,6 +61,7 @@
 	  }
 
           function initPage() {
+	    const socket = io(WS_URL);
             const keysResult = JSON.parse(localStorage.getItem("keys"));
             const apikey = keysResult["apikey"];
             const apisecret = keysResult["secret"];
