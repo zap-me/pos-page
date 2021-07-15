@@ -53,6 +53,19 @@
 	      }
 	    }
           );
+          window.addEventListener("mousedown", 
+            function(e) {
+              var popUp = document.querySelector(".swal2-popup");
+              if (popUp !== e.target && !popUp.contains(e.target)) {
+		var cancelButton = document.querySelector(".swal2-cancel");
+		if(cancelButton !== null && (cancelButton.getAttribute("style") !== "display: none;")) {
+		  cancelButton.click();
+		} else {
+		  document.querySelector(".swal2-confirm").click();
+		}
+              }
+            }
+          );
 
           function updateQr() {
               var length = window.innerWidth * 0.25;
@@ -148,7 +161,8 @@
                         text: arg,
                         icon: 'success',
                         allowEscapeKey: false,
-                        stopKeydownPropagation: false
+                        stopKeydownPropagation: false,
+                        allowOutsideClick: false
                       }).then(
 		      function(result) {
 			if(result.isConfirmed) {
