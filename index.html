@@ -40,6 +40,20 @@
 	    location.reload(true);
           }
 
+          window.addEventListener("keydown",
+	    function(e) {
+              console.log("key pressed!");
+	      if(e.key === "Escape") {
+                console.log("escaped");
+		var confirmButton = document.querySelector(".swal2-confirm");
+		if(confirmButton) {
+                  console.log("there is a confirm btn");
+		  confirmButton.click();
+		}
+	      }
+	    }
+          );
+
           function updateQr() {
               var length = window.innerWidth * 0.25;
               var logoSrc = "data:image/png;base64," + photo;
@@ -128,7 +142,14 @@
 		//if is merchant && correct invoice id
 		if (tx.recipient == email && JSON.parse(tx.attachment).invoiceid == document.querySelector("#input-invoiceid").value) {
 		  if(parseFloat(document.querySelector("#input-amount").value * 100) == tx.amount) {
-		    Swal.fire('Transaction Received!', arg, 'success').then(
+		    Swal.fire(
+                      {
+                        title: 'Transaction Receieved!',
+                        text: arg,
+                        icon: 'success',
+                        allowEscapeKey: false,
+                        stopKeydownPropagation: false
+                      }).then(
 		      function(result) {
 			if(result.isConfirmed) {
 			  Swal.fire(
@@ -181,6 +202,7 @@
 		    Swal.fire(
 		      {
 			icon: "error", 
+                        allowEnterKey: true,
 			title: "Insufficient amount",
 			text: "The QR code has been updated. Please send the remaining amount" 
 		      }
@@ -219,6 +241,7 @@
               (Swal.fire(
                 {
                    title: "POS setup",
+                   allowEnterKey: true,
                    html: `<input type='text' id='apikey-input' class='swal2-input' placeholder='premio api-key'><input type='text' id='secret-input' class='swal2-input' placeholder='premio secret'>`,
                    preConfirm: function() {
 	             const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
