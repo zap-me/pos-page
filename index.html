@@ -156,8 +156,8 @@
 			    {
 			      title: "Give rebate",
 			      html: `<input type='email' id='email-input' class='swal2-input' placeholder='email'>`,
-                              cancelButtonText: "Scan email QR",
-                              showCancelButton: true,
+                              denyButtonText: "Scan email QR",
+                              showDenyButton: true,
 			      preConfirm: function() {
 				const rebateEmail = Swal.getPopup().querySelector("#email-input").value;
 				if(!rebateEmail) {
@@ -169,7 +169,7 @@
 			  ).then(
 			      async function(emailInput) {
                                 if(emailInput.isConfirmed) {return emailInput}
-                                else {
+                                if(emailInput.isDenied) {
                                 //executed if clicked scan QR
                                 await Swal.fire( {
                                   title: "Scan email QR",
