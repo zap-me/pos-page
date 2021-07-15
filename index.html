@@ -181,18 +181,22 @@
                                   }
 
                                 } ); 
+                               } else {
+                                 return false;
                                }
 			      }
 			    
 			  ).then((res)=>{
+                            if(res !== false) {
+			      postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: Math.floor(tx.amount * REBATE_FACTOR), category: "testing", message: 1})
+			      .then(
+				function(res) {
+				  console.log("sent");
+				}
+			      );
+			      Swal.fire('Rebate sent!', 'Check emails', 'success');
 
-                            postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: Math.floor(tx.amount * REBATE_FACTOR), category: "testing", message: 1})
-                            .then(
-                              function(res) {
-                                console.log("sent");
-                              }
-                            );
-                            Swal.fire('Rebate sent!', 'Check emails', 'success');
+                            }
                             
                           });
 			}
