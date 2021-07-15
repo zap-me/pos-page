@@ -146,16 +146,16 @@
 			      }
 			    }
 			  ).then(
-			      function(emailInput) {
+			      async function(emailInput) {
                                 if(emailInput.isConfirmed) {return emailInput}
                                 else {
                                 //executed if clicked scan QR
-                                Swal.fire( {
+                                await Swal.fire( {
                                   title: "Scan email QR",
                                   html: `<video class="qr-input-stream"></video>`,
-                                  didOpen: async function() {
+                                  didRender: function() {
                                     const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), result => console.log(`result of scan is ${result}`));
-                                    await qrScanner.start();
+                                    qrScanner.start();
                                   }
 
                                 } ); 
