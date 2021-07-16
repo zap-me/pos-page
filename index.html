@@ -46,6 +46,7 @@
                    title: "POS setup",
                    allowEnterKey: true,
                    allowOutsideClick: false,
+                   showCancelButton: true,
                    html: `<input type='text' id='apikey-input' class='swal2-input' value='${apiKey}'><input type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>`,
                    preConfirm: function() {
 	             const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
@@ -171,6 +172,7 @@
 		// emit auth message
 		socket.emit('auth', auth);
 	    });
+            
 
 	    socket.on("info", (arg) => {
 		console.log(arg);
@@ -270,6 +272,15 @@
 	    postPayDb('paydb/user_info', {email: null}).then(
 	      function(res) {
 		console.log(JSON.stringify(res));
+                if (res.message === "authentication failed") {
+                  Swal.fire("Authentication error", "Please reconnect with correct keys", "error").then(
+                    function() {
+		      localStorage.clear();
+		      location.reload(true);
+                    }
+                  );
+
+                }
 		email = res.email;
 		photo = res.photo;
 		photoType = res.photo_type;
