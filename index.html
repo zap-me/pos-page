@@ -275,8 +275,7 @@
                 if (res.message === "authentication failed") {
                   Swal.fire("Authentication error", "Please reconnect with correct keys", "error").then(
                     function() {
-		      localStorage.clear();
-		      location.reload(true);
+                      resetStorage();
                     }
                   );
 
