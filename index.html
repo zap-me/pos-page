@@ -221,7 +221,7 @@
                                   title: "Scan email QR",
                                   html: `<video class="qr-input-stream"></video>`,
                                   preConfirm: function() {
-                                    return scannedRebateEmail;
+                                    return {value: scannedRebateEmail};
                                   },
                                   didRender: function() {
                                     const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
