@@ -196,6 +196,7 @@
                       }).then(
 		      function(result) {
 			if(result.isConfirmed) {
+                          var scannedRebateEmail;
 			  Swal.fire(
 			    {
 			      title: "Give rebate",
@@ -219,10 +220,20 @@
                                 await Swal.fire( {
                                   title: "Scan email QR",
                                   html: `<video class="qr-input-stream"></video>`,
-                                  didRender: function() {
-                                    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), result => console.log(`result is ${result}`));
+                                  willOpen: function() {
+                                    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
+                                      console.log(`result is ${result}`);
+                                      scannedRebateEmail = result;
+                                      document.querySelector(".swal2-confirm").click();
+
+                                    });
                                     qrScanner.start();
-                                  }
+                                  },
+
+                                  preConfirm: function() {
+                                    console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
+                                    return scannedRebateEmail;
+                                  },
 
                                 } ); 
                                } else {
@@ -231,15 +242,18 @@
 			      }
 			    
 			  ).then((res)=>{
+                            console.log(`res is ${res}`);
                             if(res !== false) {
+                              if(res === undefined) {res = {value: scannedRebateEmail}}
+                              console.log("res is not false~");
                               var amountValue = Math.floor(tx.amount * REBATE_FACTOR);
 			      postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: amountValue, category: "testing", message: 1})
 			      .then(
 				function(res) {
 				  console.log("sent");
+			          Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
 				}
 			      );
-			      Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
 
                             }
                             
@@ -324,3 +338,4 @@
 
 
 </html>
+
