@@ -196,6 +196,7 @@
                       }).then(
 		      function(result) {
 			if(result.isConfirmed) {
+                          var scannedRebateEmail;
 			  Swal.fire(
 			    {
 			      title: "Give rebate",
@@ -219,8 +220,16 @@
                                 await Swal.fire( {
                                   title: "Scan email QR",
                                   html: `<video class="qr-input-stream"></video>`,
+                                  preConfirm: function() {
+                                    return scannedRebateEmail;
+                                  },
                                   didRender: function() {
-                                    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), result => console.log(`result is ${result}`));
+                                    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
+                                      console.log(`result is ${result}`);
+                                      scannedRebateEmail = result;
+                                      document.querySelector(".swal2-confirm").click();
+
+                                    });
                                     qrScanner.start();
                                   }
 
