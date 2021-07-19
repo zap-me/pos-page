@@ -222,7 +222,7 @@
                                   html: `<video class="qr-input-stream"></video>`,
                                   preConfirm: function() {
                                     console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
-                                    return scannedRebateEmail;
+                                    return `${scannedRebateEmail}`;
                                   },
                                   didRender: function() {
                                     const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
