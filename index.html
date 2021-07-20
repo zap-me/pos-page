@@ -16,7 +16,10 @@
         <p class="field-header">invoice id</p>
         <input type="text" class="input" id="input-invoiceid">
       </div>
-      <div class="button-refresh" onclick="resetStorage();">
+      <div class="action-button button-referral" onclick="doReferral();">
+        <i class="fa fa-gift"></i>
+      </div>
+      <div class="action-button button-refresh" onclick="resetStorage();">
         <i class="fa fa-cog"></i>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/particlesjs@2.2.3/dist/particles.min.js" integrity="sha256-cy35RxCREfCgW7nc5h5HlCw5eEF4JKc9O+mb9BN07kY=" crossorigin="anonymous"></script>
@@ -35,6 +38,8 @@
           var email;
           var photo;
           var photoType;
+          // will be init later
+          var postPayDb;
           
           function resetStorage() {
 	    //localStorage.clear();
@@ -65,6 +70,35 @@
                         }
                       }
                     );
+          }
+          
+          const doReferral = function() {
+            Swal.fire(
+              {
+                title: "Claim referral",
+                allowEnterKey: true,
+                allowOutsideClick: false,
+                showCancelButton: true,
+                html: `<input type='text' id='referral-code' class='swal2-input' placeholder='referral code'>`,
+                preConfirm: function() {
+                  const referralToken = Swal.getPopup().querySelector("#referral-code").value;
+                  if(!referralToken) {
+                    Swal.showValidationMessage('Please enter a referral code');
+                  } else {
+                    return referralToken;
+                  }
+                },
+              }
+            ).then((res) => {
+	    postPayDb('reward/referral_claim', {token: res.value})
+	    .then(
+	      function(results) {
+		console.log("sent");
+	      }
+	    );
+
+            });
+
           }
 
           window.addEventListener("keydown",
@@ -145,7 +179,7 @@
 		return CryptoJS.enc.Base64.stringify(hash);
 	    }
 
-	    async function postPayDb(endpoint, params) {
+	    postPayDb = async function(endpoint, params) {
 		params['api_key'] = apikey;
 		params['nonce'] = nonce();
 		var body = JSON.stringify(params);
@@ -242,10 +276,8 @@
 			      }
 			    
 			  ).then((res)=>{
-                            console.log(`res is ${res}`);
                             if(res !== false) {
                               if(res === undefined) {res = {value: scannedRebateEmail}}
-                              console.log("res is not false~");
                               var amountValue = Math.floor(tx.amount * REBATE_FACTOR);
 			      postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: amountValue, category: "testing", message: 1})
 			      .then(
