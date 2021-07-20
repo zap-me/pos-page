@@ -31,10 +31,7 @@ body {
 }
 .qr-holder {
   background-color: transparent;
-  width: 25vw;
-  height: 25vw;
   border-radius: 13.2%;
-  margin-top: 10vh;
 }
 .input {
   width: 10vw;
