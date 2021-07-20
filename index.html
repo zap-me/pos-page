@@ -90,15 +90,15 @@
                 },
               }
             ).then((res) => {
-	    postPayDb('reward/referral_claim', {token: res.value})
-	    .then(
-	      function(results) {
-		console.log("sent");
+	      if(res.isConfirmed) {
+		postPayDb('reward/referral_claim', {token: res.value})
+		.then(
+		  function(results) {
+		    console.log("sent");
+		  }
+		);
 	      }
-	    );
-
             });
-
           }
 
           window.addEventListener("keydown",
