@@ -18,11 +18,11 @@
           </div>
 	  <div class="mb-3 mt-2">
 	    <label for="exampleInputEmail1" class="form-label">amount</label>
-	    <input type="number" class="form-control" id="input-amount" aria-describedby="emailHelp">
+	    <input type="number" class="form-control text-center" id="input-amount">
 	  </div>
 	  <div class="mb-3 mt-2">
 	    <label for="exampleInputPassword1" class="form-label">invoice id</label>
-	    <input type="text" class="form-control" id="input-invoiceid">
+	    <input type="text" class="form-control text-center" id="input-invoiceid">
 	  </div>
 	</form>
       </div>
@@ -51,6 +51,7 @@
           var photoType;
           // will be init later
           var postPayDb;
+          var referralConditions;
           
           function resetStorage() {
 	    //localStorage.clear();
@@ -82,6 +83,14 @@
                       }
                     );
           }
+
+          const showReferralConditions = function() {
+            document.querySelector("form").insertAdjacentHTML("beforeend",`
+              <div class="alert alert-primary" role="alert">
+		Spend ${referralConditions.recipient_min_spend / 100} to recieve ${referralConditions.reward_recipient / 100}
+	      </div> 
+            `);
+          }
           
           const doReferral = function() {
             Swal.fire(
@@ -102,10 +111,11 @@
               }
             ).then((res) => {
 	      if(res.isConfirmed) {
-		postPayDb('reward/referral_claim', {token: res.value})
+		postPayDb('reward/referral_validate', {token: res.value})
 		.then(
 		  function(results) {
-		    console.log("sent");
+                    referralConditions = results.referral;
+                    showReferralConditions();
 		  }
 		);
 	      }
