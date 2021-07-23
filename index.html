@@ -243,7 +243,7 @@
                     if (referralConditions) {
                       if(referralConditions.reward_recipient_type === "fixed") {
                         // if amount sent is referral requirement && sender is referral recipient
-                        if (tx.amount > referralConditions.recipient_min_spend && tx.sender === referralConditions.recipient) {
+                        if (tx.amount >= referralConditions.recipient_min_spend && tx.sender === referralConditions.recipient) {
                           postPayDb("reward/referral_claim",{token: referralConditions.token}).then(
                             function(results) {
                               Swal.fire(
