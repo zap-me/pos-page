@@ -86,7 +86,7 @@
 
           const showReferralConditions = function() {
             document.querySelector("form").insertAdjacentHTML("beforeend",`
-              <div class="alert alert-primary" role="alert">
+              <div class="alert alert-dark shadow-lg mt-3" role="alert">
 		Spend ${referralConditions.recipient_min_spend / 100} to recieve ${referralConditions.reward_recipient / 100}
 	      </div> 
             `);
@@ -240,6 +240,24 @@
 		//if is merchant && correct invoice id
 		if (tx.recipient == email && JSON.parse(tx.attachment).invoiceid == document.querySelector("#input-invoiceid").value) {
 		  if(parseFloat(document.querySelector("#input-amount").value * 100) == tx.amount) {
+                    if (referralConditions) {
+                      if(referralConditions.reward_recipient_type === "fixed") {
+                        // if amount sent is referral requirement && sender is referral recipient
+                        if (tx.amount == referralConditions.recipient_min_spend && tx.sender === referralConditions.recipient) {
+                          postPayDb("reward/referral_claim",{token: referralConditions.token}).then(
+                            function(results) {
+                              Swal.fire(
+                                {
+                                  title: "Referral claimed!",
+                                  text: "Successfully claimed referral",
+                                  icon: "success"
+                                }
+                              );
+                            }
+                          );
+                        }
+                      }
+                    }
 		    Swal.fire(
                       {
                         title: 'Transaction Receieved!',
