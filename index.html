@@ -320,9 +320,11 @@
                               var amountValue = Math.floor(tx.amount * REBATE_FACTOR);
 			      postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: amountValue, category: "testing", message: 1})
 			      .then(
-				function(res) {
-				  console.log("sent");
-			          Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
+				function(result) {
+                                  if(res.value != undefined) {
+				    console.log("sent");
+				    Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
+                                  } 
 				}
 			      );
 
