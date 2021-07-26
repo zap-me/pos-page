@@ -2,7 +2,7 @@
 const URL_BASE = "https://premio-demo.caprover.acuerdo.dev/"
 const WS_URL = "https://premio-demo.caprover.acuerdo.dev/paydb"
 
-const REBATE_FACTOR = 0.05;
+var REBATE_FACTOR;
 var qrCodeObj = null;
 var email;
 var photo;
@@ -24,14 +24,21 @@ function resetStorage() {
 	 allowEnterKey: true,
 	 allowOutsideClick: false,
 	 showCancelButton: true,
-	 html: `<input type='text' id='apikey-input' class='swal2-input' value='${apiKey}'><input type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>`,
+	 html: `<label>api key</label>
+                <input type='text' id='apikey-input' class='swal2-input' value='${apiKey}'>
+                <label>secret</label>
+                <input type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>
+                <label>rebate %</label>
+                <input type='text' id='rebate-input' class='swal2-input' value='${Math.floor(REBATE_FACTOR * 100)}'>
+         `,
 	 preConfirm: function() {
 	   const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
 	   const secretPrem  = Swal.getPopup().querySelector("#secret-input").value;
+           const rebatePercentage = Swal.getPopup().querySelector("#rebate-input").value;
 	     if(!apiKey || !secretPrem) {
 	       Swal.showValidationMessage('Please enter all keys');
 		}
-		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem}));
+		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem, rebate_percentage: rebatePercentage}));
 	      }
 	    }
 	  ).then(
@@ -136,6 +143,8 @@ function initPage() {
   const keysResult = JSON.parse(localStorage.getItem("keys"));
   const apikey = keysResult["apikey"];
   const apisecret = keysResult["secret"];
+  // if REBATE_FACTOR is a string, set to default value (0.05)
+  REBATE_FACTOR = parseFloat(keysResult["rebate_percentage"]) ? (parseFloat(keysResult["rebate_percentage"]) / 100 ) : 0.05;
   document.querySelector('#input-amount').addEventListener('input', inputChange);
   document.querySelector('#input-invoiceid').addEventListener('input', inputChange);
   if(urlParamsSet) {
@@ -365,14 +374,21 @@ window.onload = async function() {
 	 title: "POS setup",
 	 allowEnterKey: true,
 	 allowOutsideClick: false,
-	 html: `<input type='text' id='apikey-input' class='swal2-input' placeholder='premio api-key'><input type='text' id='secret-input' class='swal2-input' placeholder='premio secret'>`,
+	 html: `<input type='text' id='apikey-input' class='swal2-input' placeholder='premio api-key'>
+                <input type='text' id='secret-input' class='swal2-input' placeholder='premio secret'>
+                <input type='number' id='rebate-input' class='swal2-input' value='{REBATE_FACTOR * 100}' placeholder='rebate %'>
+         `,
 	 preConfirm: function() {
 	   const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
 	   const secretPrem  = Swal.getPopup().querySelector("#secret-input").value;
+           var rebatePercentage = Swal.getPopup().querySelector("#rebate-input").value;
+           if (rebatePercentage.length == 0) {
+             rebatePercentage = 5;
+           }
 	     if(!apiKey || !secretPrem) {
 	       Swal.showValidationMessage('Please enter all keys');
 		}
-		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem}));
+		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem, rebate_percentage: rebatePercentage}));
 	      }
 	    }
 	  ).then(
