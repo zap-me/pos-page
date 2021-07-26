@@ -52,6 +52,7 @@
           // will be init later
           var postPayDb;
           var referralConditions;
+          var urlParamsSet;
           
           function resetStorage() {
 	    //localStorage.clear();
@@ -179,6 +180,10 @@
             const apisecret = keysResult["secret"];
             document.querySelector('#input-amount').addEventListener('input', inputChange);
             document.querySelector('#input-invoiceid').addEventListener('input', inputChange);
+	    if(urlParamsSet) {
+              document.querySelector('#input-amount').value = `${urlParamsSet.amount}`;
+              document.querySelector('#input-invoiceid').value = `${urlParamsSet.invoiceid}`;
+	    }
             document.querySelector(".qr-holder").innerHTML=`
 	      <div class="sk-cube-grid">
 		<div class="sk-cube sk-cube1"></div>
@@ -378,6 +383,17 @@
           }
 
           window.onload = async function() {
+            const urlParams = window.location.search.substr(1);
+	    const queryParams = urlParams.split('&').reduce((accumulator, singleQueryParam) => {
+	      const [key, value] = singleQueryParam.split('=');
+	      accumulator[key] = decodeURIComponent(value);
+	      return accumulator;
+	    }, {});
+            if(urlParams.length != 0) {
+              urlParamsSet = queryParams;
+              console.log("There are query params!");
+            }
+            console.log(queryParams);
             var length = window.innerWidth * 0.25
             document.querySelector(".qr-holder").setAttribute("style", `width: ${length}px; height: ${length}px;`);
 	    Particles.init({
