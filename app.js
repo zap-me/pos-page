@@ -208,6 +208,7 @@ function initPage() {
   });
   
   socket.on('tx', (arg) => {
+      var referralClaimed = false;
       console.log(arg);
       var tx = JSON.parse(arg);
       //if is merchant && correct invoice id
@@ -217,6 +218,7 @@ function initPage() {
 	    if(referralConditions.reward_recipient_type === "fixed") {
 	      // if amount sent is referral requirement && sender is referral recipient
 	      if (tx.amount >= referralConditions.recipient_min_spend && tx.sender === referralConditions.recipient) {
+                referralClaimed = true;    
 		postPayDb("reward/referral_claim",{token: referralConditions.token}).then(
 		  function(results) {
 		    Swal.fire(
@@ -231,82 +233,85 @@ function initPage() {
 	      }
 	    }
 	  }
-	  Swal.fire(
-	    {
-	      title: 'Transaction Receieved!',
-	      text: arg,
-	      icon: 'success',
-	      allowEscapeKey: false,
-	      stopKeydownPropagation: false,
-	      allowOutsideClick: false
-	    }).then(
-	    function(result) {
-	      if(result.isConfirmed) {
-		var scannedRebateEmail;
-		Swal.fire(
-		  {
-		    title: "Give rebate",
-		    html: `<input type='email' id='email-input' class='swal2-input' placeholder='email'>`,
-		    showCancelButton: true,
-		    denyButtonText: "Scan email QR",
-		    showDenyButton: true,
-		    preConfirm: function() {
-		      const rebateEmail = Swal.getPopup().querySelector("#email-input").value;
-		      if(!rebateEmail) {
-			Swal.showValidationMessage('please enter an email');
+          if(!referralClaimed) {
+	    Swal.fire(
+	      {
+		title: 'Transaction Receieved!',
+		text: arg,
+		icon: 'success',
+		allowEscapeKey: false,
+		stopKeydownPropagation: false,
+		allowOutsideClick: false
+	      }).then(
+	      function(result) {
+		if(result.isConfirmed) {
+		  var scannedRebateEmail;
+		  Swal.fire(
+		    {
+		      title: "Give rebate",
+		      html: `<input type='email' id='email-input' class='swal2-input' placeholder='email'>`,
+		      showCancelButton: true,
+		      denyButtonText: "Scan email QR",
+		      showDenyButton: true,
+		      preConfirm: function() {
+			const rebateEmail = Swal.getPopup().querySelector("#email-input").value;
+			if(!rebateEmail) {
+			  Swal.showValidationMessage('please enter an email');
+			}
+			return rebateEmail; 
 		      }
-		      return rebateEmail; 
 		    }
-		  }
-		).then(
-		    async function(emailInput) {
-		      if(emailInput.isConfirmed) {return emailInput}
-		      if(emailInput.isDenied) {
-		      //executed if clicked scan QR
-		      await Swal.fire( {
-			title: "Scan email QR",
-			html: `<video class="qr-input-stream"></video>`,
-			willOpen: function() {
-			  const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
-			    console.log(`result is ${result}`);
-			    scannedRebateEmail = result;
-			    document.querySelector(".swal2-confirm").click();
+		  ).then(
+		      async function(emailInput) {
+			if(emailInput.isConfirmed) {return emailInput}
+			if(emailInput.isDenied) {
+			//executed if clicked scan QR
+			await Swal.fire( {
+			  title: "Scan email QR",
+			  html: `<video class="qr-input-stream"></video>`,
+			  willOpen: function() {
+			    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
+			      console.log(`result is ${result}`);
+			      scannedRebateEmail = result;
+			      document.querySelector(".swal2-confirm").click();
 
-			  });
-			  qrScanner.start();
-			},
+			    });
+			    qrScanner.start();
+			  },
 
-			preConfirm: function() {
-			  console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
-			  return scannedRebateEmail;
-			},
+			  preConfirm: function() {
+			    console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
+			    return scannedRebateEmail;
+			  },
 
-		      } ); 
-		     } else {
-		       return false;
-		     }
-		    }
-		  
-		).then((res)=>{
-		  if(res !== false) {
-		    if(res === undefined) {res = {value: scannedRebateEmail}}
-		    var amountValue = Math.floor(tx.amount * REBATE_FACTOR);
-		    postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: amountValue, category: "testing", message: 1})
-		    .then(
-		      function(result) {
-			if(res.value != undefined) {
-			  console.log("sent");
-			  Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
-			} 
+			} ); 
+		       } else {
+			 return false;
+		       }
 		      }
-		    );
+		    
+		  ).then((res)=>{
+		    if(res !== false) {
+		      if(res === undefined) {res = {value: scannedRebateEmail}}
+		      var amountValue = Math.floor(tx.amount * REBATE_FACTOR);
+		      postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: amountValue, category: "testing", message: 1})
+		      .then(
+			function(result) {
+			  if(res.value != undefined) {
+			    console.log("sent");
+			    Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
+			  } 
+			}
+		      );
 
-		  }
-		  
-		});
+		    }
+		    
+		  });
+		}
 	      }
-	    }
-	  );
+	    );
+
+          }
 	//otherwise, amount not correct, so update QR to include remaining amount:
 	} else {
 	  Swal.fire(
