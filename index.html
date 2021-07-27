@@ -4,21 +4,35 @@
         <meta charset="utf-8">
     <link rel="stylesheet" href="style.css" media="all">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <base href=".">
     </head>
     <body>
       <canvas class="particle-section"></canvas>
-      <div class="div-overlay">
-        <div class="qr-holder">
-        </div>
-        <p class="field-header">amount</p>
-        <input type="number" class="input" id="input-amount">
-        <p class="field-header">invoice id</p>
-        <input type="text" class="input" id="input-invoiceid">
+      <div class="div-overlay mt-5">
+        <form class="card p-3 shadow-lg d-flex flex-column align-items-center text-center">
+          <div class="mb-3">
+	    <div class="qr-holder">
+	    </div>
+          </div>
+	  <div class="mb-3 mt-2">
+	    <label for="exampleInputEmail1" class="form-label">amount</label>
+	    <input type="number" class="form-control text-center" id="input-amount">
+	  </div>
+	  <div class="mb-3 mt-2">
+	    <label for="exampleInputPassword1" class="form-label">invoice id</label>
+	    <input type="text" class="form-control text-center" id="input-invoiceid">
+	  </div>
+	</form>
       </div>
-      <div class="button-refresh" onclick="resetStorage();">
+      <div class="action-button button-referral" onclick="doReferral();">
+        <i class="fa fa-gift"></i>
+      </div>
+      <div class="action-button button-refresh" onclick="resetStorage();">
         <i class="fa fa-cog"></i>
       </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/particlesjs@2.2.3/dist/particles.min.js" integrity="sha256-cy35RxCREfCgW7nc5h5HlCw5eEF4JKc9O+mb9BN07kY=" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.3/dist/easy.qrcode.min.js" integrity="sha256-Z6PVOqJTVgyK+MUl+yuaDQJGCJ6N05pzzRHrY0FD0Cg=" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/hmac-sha256.js" integrity="sha384-nIoggK09VaqN3XWoPnmd+/rQnyaDFUUqYYH1e3S0h7w5Q/q8eUBbNUTaI2auJiQz" crossorigin="anonymous"></script>
@@ -26,314 +40,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.17/dist/sweetalert2.all.min.js" integrity="sha256-/A5TntSW7qgHFs6AcLw31t3ExTWuFBXgBAIkUZqX6o0=" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.2.0/qr-scanner.umd.min.js" integrity="sha256-6+ziyRKvOsYn8myBZPYnpW3NgAOjpOVrmnmOK1CWdns=" crossorigin="anonymous"></script>
-      <script>
-	  const URL_BASE = "https://premio-demo.caprover.acuerdo.dev/"
-	  const WS_URL = "https://premio-demo.caprover.acuerdo.dev/paydb"
-
-          const REBATE_FACTOR = 0.05;
-          var qrCodeObj = null;
-          var email;
-          var photo;
-          var photoType;
-          
-          function resetStorage() {
-	    //localStorage.clear();
-	    //location.reload(true);
-            var setUp = JSON.parse(localStorage.getItem("keys"));
-            var apiKey = setUp["apikey"];
-            var apiSecret = setUp["secret"];
-            Swal.fire(
-                {
-                   title: "POS setup",
-                   allowEnterKey: true,
-                   allowOutsideClick: false,
-                   showCancelButton: true,
-                   html: `<input type='text' id='apikey-input' class='swal2-input' value='${apiKey}'><input type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>`,
-                   preConfirm: function() {
-	             const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
-	             const secretPrem  = Swal.getPopup().querySelector("#secret-input").value;
-                       if(!apiKey || !secretPrem) {
-                         Swal.showValidationMessage('Please enter all keys');
-			  }
-			  localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem}));
-			}
-		      }
-		    ).then(
-                      function(res){
-                        if(res.isConfirmed) {
-			  location.reload(true);
-                        }
-                      }
-                    );
-          }
-
-          window.addEventListener("keydown",
-	    function(e) {
-              console.log("key pressed!");
-	      if(e.key === "Escape") {
-                console.log("escaped");
-		var confirmButton = document.querySelector(".swal2-confirm");
-		if(confirmButton) {
-                  console.log("there is a confirm btn");
-		  confirmButton.click();
-		}
-	      }
-	    }
-          );
-          window.addEventListener("mousedown", 
-            function(e) {
-              var popUp = document.querySelector(".swal2-popup");
-              if(popUp) {
-		if (popUp !== e.target && !popUp.contains(e.target)) {
-		  var cancelButton = document.querySelector(".swal2-cancel");
-		  if(cancelButton !== null && (cancelButton.getAttribute("style") !== "display: none;")) {
-		    cancelButton.click();
-		  } else {
-		    document.querySelector(".swal2-confirm").click();
-		  }
-		}
-              }
-            }
-          );
-
-          function updateQr() {
-              var length = window.innerWidth * 0.25;
-              var logoSrc = "data:image/png;base64," + photo;
-              //TODO if photoType =- 'svg'
-              var amount = parseFloat(document.querySelector('#input-amount').value) * 100;
-              var invoiceid = document.querySelector('#input-invoiceid').value;
-              var code = `premiopay://${email}?amount=${amount}&attachment={"invoiceid":"${invoiceid}"}`;
-              if (qrCodeObj !== null)
-                qrCodeObj.makeCode(code);
-              else {
-		var qrOptions = {text: code, logo: logoSrc, width: length, height: length};
-                document.querySelector(".qr-holder").innerHTML="";
-		qrCodeObj = new QRCode(document.querySelector(".qr-holder"), qrOptions);
-              }
-	  }
-
-          function inputChange(event) {
-              updateQr();
-	  }
-
-          function initPage() {
-	    const socket = io(WS_URL);
-            const keysResult = JSON.parse(localStorage.getItem("keys"));
-            const apikey = keysResult["apikey"];
-            const apisecret = keysResult["secret"];
-            document.querySelector('#input-amount').addEventListener('input', inputChange);
-            document.querySelector('#input-invoiceid').addEventListener('input', inputChange);
-            document.querySelector(".qr-holder").innerHTML=`
-	      <div class="sk-cube-grid">
-		<div class="sk-cube sk-cube1"></div>
-		<div class="sk-cube sk-cube2"></div>
-		<div class="sk-cube sk-cube3"></div>
-		<div class="sk-cube sk-cube4"></div>
-		<div class="sk-cube sk-cube5"></div>
-		<div class="sk-cube sk-cube6"></div>
-		<div class="sk-cube sk-cube7"></div>
-		<div class="sk-cube sk-cube8"></div>
-		<div class="sk-cube sk-cube9"></div>
-	      </div>
-            `;
-	    function nonce() {
-		return Math.floor(new Date().getTime() / 1000);
-	    }
-
-	    function sign(data) {
-		var hash = CryptoJS.HmacSHA256(data, apisecret);
-		return CryptoJS.enc.Base64.stringify(hash);
-	    }
-
-	    async function postPayDb(endpoint, params) {
-		params['api_key'] = apikey;
-		params['nonce'] = nonce();
-		var body = JSON.stringify(params);
-		console.log(body);
-
-		var sig = sign(body);
-		console.log(sig);
-
-		const response = await fetch(URL_BASE + endpoint, {
-		    method: 'POST',
-		    headers: {'Content-Type': 'application/json', 'X-Signature': sig},
-		    body: body
-		});
-		console.log(response.status);
-	    
-		return await response.json();
-	    }
-
-	    socket.on('connect', () => {
-		console.log('socket connected, id', socket.id);
-		// create auth data
-		var nonce_ = nonce();
-		var sig = sign(nonce_.toString());
-		auth = {signature: sig, api_key: apikey, nonce: nonce_};
-		// emit auth message
-		socket.emit('auth', auth);
-	    });
-            
-
-	    socket.on("info", (arg) => {
-		console.log(arg);
-	    });
-	    
-	    socket.on('tx', (arg) => {
-		console.log(arg);
-		var tx = JSON.parse(arg);
-		//if is merchant && correct invoice id
-		if (tx.recipient == email && JSON.parse(tx.attachment).invoiceid == document.querySelector("#input-invoiceid").value) {
-		  if(parseFloat(document.querySelector("#input-amount").value * 100) == tx.amount) {
-		    Swal.fire(
-                      {
-                        title: 'Transaction Receieved!',
-                        text: arg,
-                        icon: 'success',
-                        allowEscapeKey: false,
-                        stopKeydownPropagation: false,
-                        allowOutsideClick: false
-                      }).then(
-		      function(result) {
-			if(result.isConfirmed) {
-                          var scannedRebateEmail;
-			  Swal.fire(
-			    {
-			      title: "Give rebate",
-			      html: `<input type='email' id='email-input' class='swal2-input' placeholder='email'>`,
-                              showCancelButton: true,
-                              denyButtonText: "Scan email QR",
-                              showDenyButton: true,
-			      preConfirm: function() {
-				const rebateEmail = Swal.getPopup().querySelector("#email-input").value;
-				if(!rebateEmail) {
-				  Swal.showValidationMessage('please enter an email');
-				}
-				return rebateEmail; 
-			      }
-			    }
-			  ).then(
-			      async function(emailInput) {
-                                if(emailInput.isConfirmed) {return emailInput}
-                                if(emailInput.isDenied) {
-                                //executed if clicked scan QR
-                                await Swal.fire( {
-                                  title: "Scan email QR",
-                                  html: `<video class="qr-input-stream"></video>`,
-                                  willOpen: function() {
-                                    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
-                                      console.log(`result is ${result}`);
-                                      scannedRebateEmail = result;
-                                      document.querySelector(".swal2-confirm").click();
-
-                                    });
-                                    qrScanner.start();
-                                  },
-
-                                  preConfirm: function() {
-                                    console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
-                                    return scannedRebateEmail;
-                                  },
-
-                                } ); 
-                               } else {
-                                 return false;
-                               }
-			      }
-			    
-			  ).then((res)=>{
-                            console.log(`res is ${res}`);
-                            if(res !== false) {
-                              if(res === undefined) {res = {value: scannedRebateEmail}}
-                              console.log("res is not false~");
-                              var amountValue = Math.floor(tx.amount * REBATE_FACTOR);
-			      postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: amountValue, category: "testing", message: 1})
-			      .then(
-				function(res) {
-				  console.log("sent");
-			          Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
-				}
-			      );
-
-                            }
-                            
-                          });
-			}
-		      }
-		    );
-		  //otherwise, amount not correct, so update QR to include remaining amount:
-		  } else {
-		    Swal.fire(
-		      {
-			icon: "error", 
-                        allowEnterKey: true,
-			title: "Insufficient amount",
-			text: "The QR code has been updated. Please send the remaining amount" 
-		      }
-
-		    ).then(
-		      function(result) {
-			if(result.isConfirmed) {
-			  document.querySelector('#input-amount').value = parseFloat(parseFloat(document.querySelector('#input-amount').value) - (tx.amount / 100));
-			  updateQr();
-			}
-		      }
-		    );
-		  }
-		  console.log("recieved");
-		}
-	    });
-
-	    postPayDb('paydb/user_info', {email: null}).then(
-	      function(res) {
-		console.log(JSON.stringify(res));
-                if (res.message === "authentication failed") {
-                  Swal.fire("Authentication error", "Please reconnect with correct keys", "error").then(
-                    function() {
-                      resetStorage();
-                    }
-                  );
-
-                }
-		email = res.email;
-		photo = res.photo;
-		photoType = res.photo_type;
-		updateQr();
-	      }
-	    );
-          }
-
-          window.onload = async function() {
-	    Particles.init({
-	      selector: '.particle-section',
-              maxParticles: 180,
-              connectParticles: true,
-	    });
-            if(localStorage.getItem("keys") == null) {
-              (Swal.fire(
-                {
-                   title: "POS setup",
-                   allowEnterKey: true,
-                   allowOutsideClick: false,
-                   html: `<input type='text' id='apikey-input' class='swal2-input' placeholder='premio api-key'><input type='text' id='secret-input' class='swal2-input' placeholder='premio secret'>`,
-                   preConfirm: function() {
-	             const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
-	             const secretPrem  = Swal.getPopup().querySelector("#secret-input").value;
-                       if(!apiKey || !secretPrem) {
-                         Swal.showValidationMessage('Please enter all keys');
-			  }
-			  localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem}));
-			}
-		      }
-		    ).then(
-                      function() {initPage();}
-                    ));
-            } else {
-              initPage();
-            }
-	  };
-
-      </script>
+      <script src="app.js"></script>
     </body>
 
 

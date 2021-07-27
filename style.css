@@ -31,10 +31,7 @@ body {
 }
 .qr-holder {
   background-color: transparent;
-  width: 25vw;
-  height: 25vw;
   border-radius: 13.2%;
-  margin-top: 10vh;
 }
 .input {
   width: 10vw;
@@ -114,22 +111,30 @@ body {
   width: 70%;
 }
 
-.button-refresh {
+.action-button {
   background-color: black;
   height: 2.5vw;
   width: 2.5vw;
   border-radius: 50%;
   position: fixed;
   z-index: 999;
-  bottom: 10vh;
-  right: 10vw;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
 }
 
-.button-refresh > * {
+.button-refresh {
+  bottom: 10vh;
+  right: 10vw;
+}
+
+.button-referral {
+  bottom: 23vh;
+  right: 10vw;
+}
+
+.action-button > * {
   color: white;
   font-size: 1.5vh;
 }
