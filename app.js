@@ -18,6 +18,7 @@ function resetStorage() {
   var setUp = JSON.parse(localStorage.getItem("keys"));
   var apiKey = setUp["apikey"];
   var apiSecret = setUp["secret"];
+  var chosenAssetTicker = setUp["asset_ticker"];
   Swal.fire(
       {
 	 title: "POS setup",
@@ -30,15 +31,18 @@ function resetStorage() {
                 <input type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>
                 <label>rebate %</label>
                 <input type='text' id='rebate-input' class='swal2-input' value='${Math.floor(REBATE_FACTOR * 100)}'>
+                <label>asset ticker</label>
+                <input type='text' id='ticker-input' class='swal2-input' value='${chosenAssetTicker}'>
          `,
 	 preConfirm: function() {
 	   const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
 	   const secretPrem  = Swal.getPopup().querySelector("#secret-input").value;
            const rebatePercentage = Swal.getPopup().querySelector("#rebate-input").value;
+           const newAssetTicker = Swal.getPopup().querySelector("#ticker-input").value;
 	     if(!apiKey || !secretPrem) {
 	       Swal.showValidationMessage('Please enter all keys');
 		}
-		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem, rebate_percentage: rebatePercentage}));
+		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem, rebate_percentage: rebatePercentage, asset_ticker: newAssetTicker}));
 	      }
 	    }
 	  ).then(
@@ -145,6 +149,8 @@ function initPage() {
   const apisecret = keysResult["secret"];
   // if REBATE_FACTOR is a string, set to default value (0.05)
   REBATE_FACTOR = parseFloat(keysResult["rebate_percentage"]) ? (parseFloat(keysResult["rebate_percentage"]) / 100 ) : 0.05;
+  const currentAsset = keysResult["asset_ticker"];
+  document.querySelector("#amount-label").innerText = `amount (${currentAsset})`;
   document.querySelector('#input-amount').addEventListener('input', inputChange);
   document.querySelector('#input-invoiceid').addEventListener('input', inputChange);
   if(urlParamsSet) {
@@ -382,6 +388,7 @@ window.onload = async function() {
 	 html: `<input type='text' id='apikey-input' class='swal2-input' placeholder='premio api-key'>
                 <input type='text' id='secret-input' class='swal2-input' placeholder='premio secret'>
                 <input type='number' id='rebate-input' class='swal2-input' value='{REBATE_FACTOR * 100}' placeholder='rebate %'>
+                <input type='text' id='ticker-input' class='swal2-input' placeholder='asset ticker'>
          `,
 	 preConfirm: function() {
 	   const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
@@ -390,10 +397,15 @@ window.onload = async function() {
            if (rebatePercentage.length == 0) {
              rebatePercentage = 5;
            }
+           var assetTicker = Swal.getPopup().querySelector("#ticker-input").value;
+           if(assetTicker === "" || assetTicker === undefined) {
+             // default val
+             assetTicker = "PRM";
+           }
 	     if(!apiKey || !secretPrem) {
 	       Swal.showValidationMessage('Please enter all keys');
 		}
-		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem, rebate_percentage: rebatePercentage}));
+		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem, rebate_percentage: rebatePercentage, asset_ticker: assetTicker}));
 	      }
 	    }
 	  ).then(
