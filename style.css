@@ -29,21 +29,13 @@ body {
   right: 0;
   background-color: transparent;
 }
+
 .qr-holder {
   background-color: transparent;
   border-radius: 13.2%;
+
 }
-.input {
-  width: 10vw;
-  height: 4vh;
-  margin-top: 2.5vw;
-  border-radius: 5%;
-  border-width: 0.2vw;
-  text-align: center;
-}
-.field-header , .input {
-  font-size: 2vh;
-}
+
 .sk-cube-grid {
   width: 40px;
   height: 40px;
@@ -57,7 +49,7 @@ body {
   opacity: 0.7;
   float: left;
   -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
-	  animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out; 
+	  animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
 }
 .sk-cube-grid .sk-cube1 {
   -webkit-animation-delay: 0.2s;
@@ -93,7 +85,7 @@ body {
 	    transform: scale3D(1, 1, 1);
   } 35% {
     -webkit-transform: scale3D(0, 0, 1);
-	    transform: scale3D(0, 0, 1); 
+	    transform: scale3D(0, 0, 1);
   }
 }
 
@@ -104,7 +96,7 @@ body {
   } 35% {
     -webkit-transform: scale3D(0, 0, 1);
 	    transform: scale3D(0, 0, 1);
-  } 
+  }
 }
 
 .qr-input-stream {
@@ -113,8 +105,8 @@ body {
 
 .action-button {
   background-color: black;
-  height: 2.5vw;
-  width: 2.5vw;
+  height: 5vw;
+  width: 5vw;
   border-radius: 50%;
   position: fixed;
   z-index: 999;
@@ -134,7 +126,7 @@ body {
   right: 10vw;
 }
 
-.action-button > * {
+.fa {
   color: white;
-  font-size: 1.5vh;
+  font-size: 2.5vw !important;
 }

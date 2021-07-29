@@ -2,7 +2,7 @@
 const URL_BASE = "https://premio-demo.caprover.acuerdo.dev/"
 const WS_URL = "https://premio-demo.caprover.acuerdo.dev/paydb"
 
-var REBATE_FACTOR;
+var REBATE_FACTOR = 0.05;
 var qrCodeObj = null;
 var email;
 var photo;
@@ -15,25 +15,44 @@ var urlParamsSet;
 function doStorage() {
   //localStorage.clear();
   //location.reload(true);
+  var apiKey = '';
+  var apiSecret = '';
+  var chosenAssetTicker = '';
   var setUp = JSON.parse(localStorage.getItem("keys"));
-  var apiKey = setUp["apikey"];
-  var apiSecret = setUp["secret"];
-  var chosenAssetTicker = setUp["asset_ticker"];
+  if (setUp !== null) {
+      apiKey = setUp["apikey"];
+      apiSecret = setUp["secret"];
+      chosenAssetTicker = setUp["asset_ticker"];
+  }
   Swal.fire(
       {
 	 title: "POS setup",
 	 allowEnterKey: true,
 	 allowOutsideClick: false,
 	 showCancelButton: true,
-	 html: `<label for='input-api'>api key</label>
-                <input name='input-api' type='text' id='apikey-input' class='swal2-input' value='${apiKey}'>
-                <label for='input-secret'>secret</label>
-                <input name='input-secret' type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>
-                <label for='input-rebate'>rebate %</label>
-                <input name='input-rebate' type='text' id='rebate-input' class='swal2-input' value='${Math.floor(REBATE_FACTOR * 100)}'>
-                <label for='input-ticker'>asset</label>
-                <input name='input-ticker' type='text' id='ticker-input' class='swal2-input' value='${chosenAssetTicker}'>
-         `,
+	 html: `
+<form>
+  <div class="form-group">
+    <label for="apikey-input">Api Key</label>
+    <input type='text' id='apikey-input' class='form-control' value='${apiKey}' placeholder='api key'>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="secret-input">Api Secret</label>
+    <input type='text' id='secret-input' class='form-control' value='${apiSecret}' placeholder='api secret'>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="rebate-input">Rebate (%)</label>
+    <input type='text' id='rebate-input' class='form-control' value='${Math.floor(REBATE_FACTOR * 100)}' placeholder='rebate %'>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="ticker-input">Asset</label>
+    <input type='text' id='ticker-input' class='form-control' value='${chosenAssetTicker}' placeholder='asset name'>
+  </div>
+</form>
+    `,
 	 preConfirm: function() {
 	   const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
 	   const secretPrem  = Swal.getPopup().querySelector("#secret-input").value;
@@ -147,8 +166,7 @@ function initPage() {
   const keysResult = JSON.parse(localStorage.getItem("keys"));
   const apikey = keysResult["apikey"];
   const apisecret = keysResult["secret"];
-  // if REBATE_FACTOR is a string, set to default value (0.05)
-  REBATE_FACTOR = parseFloat(keysResult["rebate_percentage"]) ? (parseFloat(keysResult["rebate_percentage"]) / 100 ) : 0.05;
+  REBATE_FACTOR = parseFloat(keysResult["rebate_percentage"]) ? (parseFloat(keysResult["rebate_percentage"]) / 100 ) : REBATE_FACTOR;
   const currentAsset = keysResult["asset_ticker"];
   document.querySelector("#amount-label").innerText = `amount (${currentAsset})`;
   document.querySelector('#input-amount').addEventListener('input', inputChange);
@@ -375,37 +393,7 @@ window.onload = async function() {
   var length = window.innerWidth * 0.25
   document.querySelector(".qr-holder").setAttribute("style", `width: ${length}px; height: ${length}px;`);
   if(localStorage.getItem("keys") == null) {
-    (Swal.fire(
-      {
-	 title: "POS setup",
-	 allowEnterKey: true,
-	 allowOutsideClick: false,
-	 html: `<input type='text' id='apikey-input' class='swal2-input' placeholder='premio api-key'>
-                <input type='text' id='secret-input' class='swal2-input' placeholder='premio secret'>
-                <input type='number' id='rebate-input' class='swal2-input' value='{REBATE_FACTOR * 100}' placeholder='rebate %'>
-                <input type='text' id='ticker-input' class='swal2-input' placeholder='asset ticker'>
-         `,
-	 preConfirm: function() {
-	   const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
-	   const secretPrem  = Swal.getPopup().querySelector("#secret-input").value;
-           var rebatePercentage = Swal.getPopup().querySelector("#rebate-input").value;
-           if (rebatePercentage.length == 0) {
-             rebatePercentage = 5;
-           }
-           var assetTicker = Swal.getPopup().querySelector("#ticker-input").value;
-           if(assetTicker === "" || assetTicker === undefined) {
-             // default val
-             assetTicker = "PRM";
-           }
-	     if(!apiKey || !secretPrem) {
-	       Swal.showValidationMessage('Please enter all keys');
-		}
-		localStorage.setItem("keys", JSON.stringify({apikey: apiKey, secret: secretPrem, rebate_percentage: rebatePercentage, asset_ticker: assetTicker}));
-	      }
-	    }
-	  ).then(
-	    function() {initPage();}
-	  ));
+    doStorage();
   } else {
     initPage();
   }
