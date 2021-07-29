@@ -147,7 +147,7 @@ function updateQr() {
     //TODO if photoType =- 'svg'
     var amount = parseFloat(document.querySelector('#input-amount').value) * 100;
     var invoiceid = document.querySelector('#input-invoiceid').value;
-    var code = `premiopay://${email}?amount=${amount}&attachment={"invoiceid":"${invoiceid}"}`;
+    var code = `premiofrankie://${email}?amount=${amount}&attachment={"invoiceid":"${invoiceid}"}`;
     if (qrCodeObj !== null)
       qrCodeObj.makeCode(code);
     else {
