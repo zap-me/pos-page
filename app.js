@@ -1,6 +1,6 @@
 
-const URL_BASE = "https://premio-demo.caprover.acuerdo.dev/"
-const WS_URL = "https://premio-demo.caprover.acuerdo.dev/paydb"
+const URL_BASE = "https://mtoken-test.caprover.acuerdo.dev/"
+const WS_URL = "https://mtoken-test.caprover.acuerdo.dev/paydb"
 
 var REBATE_FACTOR = 0.05;
 var qrCodeObj = null;
