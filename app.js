@@ -162,6 +162,10 @@ function inputChange(event) {
 }
 
 function initPage() {
+  const screenWidth = window.screen.width;
+  if(screenWidth <= 768) {
+   document.querySelector(".card").style.width = `${screenWidth}px`; 
+  }
   const socket = io(WS_URL);
   const keysResult = JSON.parse(localStorage.getItem("keys"));
   const apikey = keysResult["apikey"];
