@@ -122,8 +122,8 @@ window.addEventListener("mousedown",
 );
 
 function updateQr() {
-    var length = window.innerWidth * 0.25;
-    document.querySelector(".qr-holder").setAttribute("style", `width: ${length}; height: ${length};`);
+    var length = document.querySelector(".card").getBoundingClientRect().width;
+    document.querySelector(".qr-holder").setAttribute("style", `width: ${length}px; height: ${length}px;`);
     var logoSrc = "data:image/png;base64," + photo;
     //TODO if photoType =- 'svg'
     var amount = parseFloat(document.querySelector('#input-amount').value) * 100;
