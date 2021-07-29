@@ -26,7 +26,7 @@ function doStorage() {
   }
   Swal.fire(
       {
-         title: "POS setup",
+   title: "POS setup",
    allowEnterKey: true,
    allowOutsideClick: false,
    showCancelButton: true,
