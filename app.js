@@ -25,14 +25,14 @@ function doStorage() {
 	 allowEnterKey: true,
 	 allowOutsideClick: false,
 	 showCancelButton: true,
-	 html: `<label>api key</label>
-                <input type='text' id='apikey-input' class='swal2-input' value='${apiKey}'>
-                <label>secret</label>
-                <input type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>
-                <label>rebate %</label>
-                <input type='text' id='rebate-input' class='swal2-input' value='${Math.floor(REBATE_FACTOR * 100)}'>
-                <label>asset ticker</label>
-                <input type='text' id='ticker-input' class='swal2-input' value='${chosenAssetTicker}'>
+	 html: `<label for='input-api'>api key</label>
+                <input name='input-api' type='text' id='apikey-input' class='swal2-input' value='${apiKey}'>
+                <label for='input-secret'>secret</label>
+                <input name='input-secret' type='text' id='secret-input' class='swal2-input' value='${apiSecret}'>
+                <label for='input-rebate'>rebate %</label>
+                <input name='input-rebate' type='text' id='rebate-input' class='swal2-input' value='${Math.floor(REBATE_FACTOR * 100)}'>
+                <label for='input-ticker'>asset</label>
+                <input name='input-ticker' type='text' id='ticker-input' class='swal2-input' value='${chosenAssetTicker}'>
          `,
 	 preConfirm: function() {
 	   const apiKey = Swal.getPopup().querySelector("#apikey-input").value;
