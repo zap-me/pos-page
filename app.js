@@ -12,7 +12,7 @@ var postPayDb;
 var referralConditions;
 var urlParamsSet;
 
-function resetStorage() {
+function doStorage() {
   //localStorage.clear();
   //location.reload(true);
   var setUp = JSON.parse(localStorage.getItem("keys"));
@@ -347,7 +347,7 @@ function initPage() {
       if (res.message === "authentication failed") {
 	Swal.fire("Authentication error", "Please reconnect with correct keys", "error").then(
 	  function() {
-	    resetStorage();
+	    doStorage();
 	  }
 	);
 
@@ -374,11 +374,6 @@ window.onload = async function() {
   console.log(queryParams);
   var length = window.innerWidth * 0.25
   document.querySelector(".qr-holder").setAttribute("style", `width: ${length}px; height: ${length}px;`);
-  Particles.init({
-    selector: '.particle-section',
-    maxParticles: 180,
-    connectParticles: true,
-  });
   if(localStorage.getItem("keys") == null) {
     (Swal.fire(
       {
@@ -414,4 +409,6 @@ window.onload = async function() {
   } else {
     initPage();
   }
+  document.getElementById("button-referral").addEventListener("click", doReferral);
+  document.getElementById("button-storage").addEventListener("click", doStorage);
 };

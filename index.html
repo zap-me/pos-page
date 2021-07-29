@@ -3,34 +3,35 @@
     <head>
         <meta charset="utf-8">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css" media="all">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <base href=".">
     </head>
     <body>
-      <canvas class="particle-section"></canvas>
       <div class="div-overlay mt-5">
+        <div class="mb-3">
+          <div class="qr-holder"/>
+        </div>
         <form class="card p-3 shadow-lg d-flex flex-column align-items-center text-center">
-          <div class="mb-3">
-	    <div class="qr-holder">
-	    </div>
-          </div>
-	  <div class="mb-3 mt-2">
-	    <label for="exampleInputEmail1" class="form-label" id="amount-label"></label>
-	    <input type="number" class="form-control text-center" id="input-amount">
-	  </div>
-	  <div class="mb-3 mt-2">
-	    <label for="exampleInputPassword1" class="form-label">invoice id</label>
-	    <input type="text" class="form-control text-center" id="input-invoiceid">
-	  </div>
-	</form>
+          <fieldset>
+            <legend>Invoice Details</legend>
+            <div class="mb-3 mt-2">
+              <label for="input-amount" class="form-label" id="amount-label">amount</label>
+              <input type="number" class="form-control text-center" id="input-amount">
+            </div>
+            <div class="mb-3 mt-2">
+              <label for="input-invoiceid" class="form-label">invoice id</label>
+              <input class="form-control text-center" id="input-invoiceid">
+            </div>
+          </fieldset>
+        </form>
       </div>
-      <div class="action-button button-referral" onclick="doReferral();">
+      <div id="button-referral" class="action-button button-referral">
         <i class="fa fa-gift"></i>
       </div>
-      <div class="action-button button-refresh" onclick="resetStorage();">
+      <div id="button-storage" class="action-button button-refresh">
         <i class="fa fa-cog"></i>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
