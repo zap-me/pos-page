@@ -22,8 +22,6 @@ jobs:
           sudo apt install npm
           npm i -g html-lint
           npm i -g eslint
-          npm install --save-dev eslint eslint-config-google
-
           
       - name: Run html-lint
         run: |
