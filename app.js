@@ -1,4 +1,4 @@
-
+/*global Swal, QRCode, io, CryptoJS, QrScanner */
 const URL_BASE = "https://mtoken-test.zap.me/";
 const WS_URL = "https://mtoken-test.zap.me/paydb";
 
@@ -6,7 +6,6 @@ var REBATE_FACTOR = 0.05;
 var qrCodeObj = null;
 var email;
 var photo;
-var photoType;
 // will be init later
 var postPayDb;
 var referralConditions;
@@ -157,7 +156,7 @@ function updateQr() {
     }
 }
 
-function inputChange(event) {
+function inputChange() {
     updateQr();
 }
 
@@ -225,7 +224,7 @@ function initPage() {
       // create auth data
       var nonce_ = nonce();
       var sig = sign(nonce_.toString());
-      auth = {signature: sig, api_key: apikey, nonce: nonce_};
+      var auth = {signature: sig, api_key: apikey, nonce: nonce_};
       // emit auth message
       socket.emit('auth', auth);
   });
@@ -248,7 +247,7 @@ function initPage() {
         if (tx.amount >= referralConditions.recipient_min_spend && tx.sender === referralConditions.recipient) {
                 referralClaimed = true;    
     postPayDb("reward/referral_claim",{token: referralConditions.token}).then(
-      function(results) {
+      function() {
         Swal.fire(
           {
       title: "Referral claimed!",
@@ -324,7 +323,7 @@ function initPage() {
           var amountValue = Math.floor(tx.amount * REBATE_FACTOR);
           postPayDb('payment_create', {reason: "rebate", recipient: res.value, amount: amountValue, category: "testing", message: 1})
           .then(
-      function(result) {
+      function() {
         if(res.value != undefined) {
           console.log("sent");
           Swal.fire('Rebate sent!', `Sent ${amountValue / 100}`, 'success');
@@ -376,7 +375,6 @@ function initPage() {
       }
       email = res.email;
       photo = res.photo;
-      photoType = res.photo_type;
       updateQr();
     }
   );
