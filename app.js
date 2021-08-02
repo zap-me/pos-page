@@ -80,6 +80,34 @@ const showReferralConditions = function() {
   `);
 }
 
+const invoiceCreate = function() {
+  Swal.fire(
+    {
+      title: "Invoice",
+      html: `
+        <label for="amount">Amount</label>
+        <input name='amount' type='text' id='amount-input' class='swal2-input' placeholder='amount'>
+        <label for="id">Invoice</label>
+        <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
+      `,
+      preConfirm: function() {
+        localStorage.setItem("recentInvoiceId", `${Swal.getPopup().querySelector("#id-input").value}`);
+        localStorage.setItem("recentAmount", `${Swal.getPopup().querySelector("#amount-input").value}`);
+        return {
+          txAmount : Swal.getPopup().querySelector("#amount-input").value,
+          invoiceId : Swal.getPopup().querySelector("#id-input").value
+        };
+      },
+    }
+  ).then(
+
+    function(res){
+      updateQr(res.value.txAmount, res.value.invoiceId);
+    }
+
+  );
+}
+
 const doReferral = function() {
   Swal.fire(
     {
@@ -139,20 +167,25 @@ window.addEventListener("mousedown",
   }
 );
 
-function updateQr() {
-    var length = document.querySelector(".card").getBoundingClientRect().width;
-    document.querySelector(".qr-holder").setAttribute("style", `width: ${length}px; height: ${length}px;`);
+function updateQr(txAmount, invoiceId) {
     var logoSrc = "data:image/png;base64," + photo;
     //TODO if photoType =- 'svg'
-    var amount = parseFloat(document.querySelector('#input-amount').value) * 100;
-    var invoiceid = document.querySelector('#input-invoiceid').value;
-    var code = `premiofrankie://${email}?amount=${amount}&attachment={"invoiceid":"${invoiceid}"}`;
+    var code = `premiofrankie://${email}?amount=${txAmount*100}&attachment={"invoiceid":"${invoiceId}"}`;
+    if (txAmount === undefined || txAmount.length === 0) {
+      return undefined;
+    }
+    Swal.fire(
+      {
+	html: `<div class='qr-div-holder'></div>`,
+      }
+    );
+    var length = document.querySelector(".swal2-popup").getBoundingClientRect().width * 0.8;
+    document.querySelector(".qr-div-holder").innerHTML="";
+    qrCodeObj = new QRCode(document.querySelector(".qr-div-holder"), qrOptions);
     if (qrCodeObj !== null)
       qrCodeObj.makeCode(code);
     else {
       var qrOptions = {text: code, logo: logoSrc, width: length, height: length};
-      document.querySelector(".qr-holder").innerHTML="";
-      qrCodeObj = new QRCode(document.querySelector(".qr-holder"), qrOptions);
     }
 }
 
@@ -162,35 +195,15 @@ function inputChange() {
 
 function initPage() {
   const screenWidth = window.screen.width;
-  if(screenWidth <= 768) {
-   document.querySelector(".card").style.width = `${screenWidth * 0.8}px`; 
-  }
   const socket = io(WS_URL);
   const keysResult = JSON.parse(localStorage.getItem("keys"));
   const apikey = keysResult["apikey"];
   const apisecret = keysResult["secret"];
   REBATE_FACTOR = parseFloat(keysResult["rebate_percentage"]) ? (parseFloat(keysResult["rebate_percentage"]) / 100 ) : REBATE_FACTOR;
   const currentAsset = keysResult["asset_ticker"];
-  document.querySelector("#amount-label").innerText = `amount (${currentAsset})`;
-  document.querySelector('#input-amount').addEventListener('input', inputChange);
-  document.querySelector('#input-invoiceid').addEventListener('input', inputChange);
   if(urlParamsSet) {
-    document.querySelector('#input-amount').value = `${urlParamsSet.amount}`;
-    document.querySelector('#input-invoiceid').value = `${urlParamsSet.invoiceid}`;
+    updateQr(urlParamsSet.amount, urlParamsSet.invoiceid);
   }
-  document.querySelector(".qr-holder").innerHTML=`
-    <div class="sk-cube-grid">
-      <div class="sk-cube sk-cube1"></div>
-      <div class="sk-cube sk-cube2"></div>
-      <div class="sk-cube sk-cube3"></div>
-      <div class="sk-cube sk-cube4"></div>
-      <div class="sk-cube sk-cube5"></div>
-      <div class="sk-cube sk-cube6"></div>
-      <div class="sk-cube sk-cube7"></div>
-      <div class="sk-cube sk-cube8"></div>
-      <div class="sk-cube sk-cube9"></div>
-    </div>
-  `;
   function nonce() {
       return Math.floor(new Date().getTime() / 1000);
   }
@@ -239,8 +252,8 @@ function initPage() {
       console.log(arg);
       var tx = JSON.parse(arg);
       //if is merchant && correct invoice id
-      if (tx.recipient == email && JSON.parse(tx.attachment).invoiceid == document.querySelector("#input-invoiceid").value) {
-  if(parseFloat(document.querySelector("#input-amount").value * 100) == tx.amount) {
+      if (tx.recipient == email && JSON.parse(tx.attachment).invoiceid == localStorage.getItem("recentInvoiceId")) {
+  if(parseFloat(parseFloat(localStorage.getItem("recentAmount")) * 100) == tx.amount) {
     if (referralConditions) {
       if(referralConditions.reward_recipient_type === "fixed") {
         // if amount sent is referral requirement && sender is referral recipient
@@ -393,7 +406,6 @@ window.onload = async function() {
   }
   console.log(queryParams);
   var length = window.innerWidth * 0.25
-  document.querySelector(".qr-holder").setAttribute("style", `width: ${length}px; height: ${length}px;`);
   if(localStorage.getItem("keys") == null) {
     doStorage();
   } else {
@@ -401,4 +413,8 @@ window.onload = async function() {
   }
   document.getElementById("button-referral").addEventListener("click", doReferral);
   document.getElementById("button-storage").addEventListener("click", doStorage);
+  document.querySelector(".send-tab").addEventListener("click", invoiceCreate);
+  document.querySelector(".rec-tab").addEventListener("click", sendRebate);
+
+
 };
