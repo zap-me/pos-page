@@ -108,6 +108,47 @@ const invoiceCreate = function() {
   );
 }
 
+const sendRebate = function() {
+  Swal.fire(
+    {
+      title: "Send",
+      html: `
+        <label for="recipient">Email</label>
+        <input name='recipientt' type='text' id='recipient-input' class='swal2-input' placeholder='recipient'>
+        <label for="amount">Amount</label>
+        <input name='amount' type='text' id='amount-input' class='swal2-input' placeholder='amount'>
+        <label for="id">Invoice</label>
+        <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
+      `,
+      preConfirm: function() {
+        localStorage.setItem("recentInvoiceId", `${Swal.getPopup().querySelector("#id-input").value}`);
+        localStorage.setItem("recentAmount", `${Swal.getPopup().querySelector("#amount-input").value}`);
+        return {
+          recipient: Swal.getPopup().querySelector("#recipient-input").value,
+          txAmount : Swal.getPopup().querySelector("#amount-input").value,
+          invoiceId : Swal.getPopup().querySelector("#id-input").value
+        };
+      },
+   }
+  ).then(
+    function(res) {
+      if (res.isConfirmed) {
+        postPayDb('payment_create', {reason: res.value.invoiceId, recipient: res.value.recipient, amount: parseFloat(res.value.txAmount) * 100, category: "testing", message: 1}).then(
+          function() {
+	    Swal.fire(
+	      {
+		title: "Rebate sent!",
+		icon: "success"
+	      }
+	    );
+          }
+        );
+      }
+    }
+  );
+
+}
+
 const doReferral = function() {
   Swal.fire(
     {
