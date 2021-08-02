@@ -132,15 +132,18 @@ const sendRebate = function() {
    }
   ).then(
     function(res) {
-      if (res.isConfirmed) {
+      if (res.isConfirmed && res.value.txAmount !== "") {
         postPayDb('payment_create', {reason: res.value.invoiceId, recipient: res.value.recipient, amount: parseFloat(res.value.txAmount) * 100, category: "testing", message: 1}).then(
-          function() {
-	    Swal.fire(
-	      {
-		title: "Rebate sent!",
-		icon: "success"
-	      }
-	    );
+          function(result) {
+            console.log(`result is ${result.amount}`);
+            if (result.proposal.payment.amount != null) {
+	      Swal.fire(
+		{
+		  title: "Rebate sent!",
+		  icon: "success"
+		}
+	      );
+            }
           }
         );
       }
