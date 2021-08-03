@@ -153,3 +153,17 @@ body {
   position: fixed;
   bottom: 50%;
 }
+
+.pos-right {
+  position: fixed;
+  right: 5vw;
+  z-index: 9999;
+}
+
+#button-referral {
+  bottom: 20vh;
+}
+
+#button-storage {
+  bottom: 30vh;
+}
