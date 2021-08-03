@@ -325,6 +325,10 @@ function initPage() {
     icon: 'success',
     allowEscapeKey: false,
     stopKeydownPropagation: false,
+    didOpen: function() {
+      var audioObj = new Audio('tx-sound.mp3');
+      audioObj.play();
+    },
     allowOutsideClick: false
         }).then(
         function(result) {
