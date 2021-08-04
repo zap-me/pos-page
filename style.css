@@ -164,7 +164,7 @@ body {
   display: flex;
   justify-content: space-around;
   width: 100vw;
-  height: 40vh;
+  height: 30vh;
 }
 
 .menu-card {
@@ -172,4 +172,13 @@ body {
   justify-content: center;
   align-items: center;
   width: 50%;
+}
+
+.profile-card {
+  width: 85vw;
+  height: 20vh;
+}
+
+.fixed-img {
+  height: 100%;
 }

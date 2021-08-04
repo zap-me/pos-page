@@ -435,6 +435,19 @@ function initPage() {
       email = res.email;
       photo = res.photo;
       console.log(`set photo var - photo is ${photo}`);
+      document.querySelector(".profile-card").innerHTML=`
+	<div class="row g-0">
+	  <div class="col-md-4">
+	    <img src="data:image/jpeg;base64,${photo}" class="img-fluid rounded-start fixed-img" alt="...">
+	  </div>
+	  <div class="col-md-8">
+	    <div class="card-body">
+	      <h5 class="card-title">Signed in as ${email}</h5>
+	      <p class="card-text"></p>
+	    </div>
+	  </div>
+	</div>
+      `;
       updateQr();
     }
   );
