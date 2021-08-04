@@ -213,6 +213,7 @@ window.addEventListener("mousedown",
 
 function updateQr(txAmount, invoiceId) {
     var logoSrc = "data:image/png;base64," + photo;
+    console.log(`logoSrc is ${logoSrc}`);
     //TODO if photoType =- 'svg'
     var code = `premiofrankie://${email}?amount=${txAmount*100}&attachment={"invoiceid":"${invoiceId}"}`;
     if (txAmount === undefined || txAmount.length === 0) {
@@ -225,12 +226,9 @@ function updateQr(txAmount, invoiceId) {
     );
     var length = document.querySelector(".swal2-popup").getBoundingClientRect().width * 0.8;
     document.querySelector(".qr-div-holder").innerHTML="";
-    qrCodeObj = new QRCode(document.querySelector(".qr-div-holder"), qrOptions);
-    if (qrCodeObj !== null)
-      qrCodeObj.makeCode(code);
-    else {
       var qrOptions = {text: code, logo: logoSrc, width: length, height: length};
-    }
+    qrCodeObj = new QRCode(document.querySelector(".qr-div-holder"), qrOptions);
+    qrCodeObj.makeCode(code);
 }
 
 function inputChange() {
@@ -436,6 +434,7 @@ function initPage() {
       }
       email = res.email;
       photo = res.photo;
+      console.log(`set photo var - photo is ${photo}`);
       updateQr();
     }
   );
