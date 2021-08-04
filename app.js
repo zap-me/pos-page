@@ -458,10 +458,10 @@ window.onload = async function() {
   } else {
     initPage();
   }
-  document.getElementById("button-referral").addEventListener("click", doReferral);
-  document.getElementById("button-storage").addEventListener("click", doStorage);
-  document.querySelector(".send-tab").addEventListener("click", invoiceCreate);
-  document.querySelector(".rec-tab").addEventListener("click", sendRebate);
+  document.querySelector("#button-referral").addEventListener("click", doReferral);
+  document.querySelector("#button-storage").addEventListener("click", doStorage);
+  document.querySelector("#rec-tab").addEventListener("click", invoiceCreate);
+  document.querySelector("#send-tab").addEventListener("click", sendRebate);
+}
 
 
-};

@@ -160,10 +160,16 @@ body {
   z-index: 9999;
 }
 
-#button-referral {
-  bottom: 20vh;
+.menu-row {
+  display: flex;
+  justify-content: space-around;
+  width: 100vw;
+  height: 40vh;
 }
 
-#button-storage {
-  bottom: 30vh;
+.menu-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
 }
