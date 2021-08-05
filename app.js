@@ -81,15 +81,25 @@ const showReferralConditions = function() {
 }
 
 const invoiceCreate = function() {
+  var htmlForSwal = `
+    <label for="amount">Amount</label>
+    <input name='amount' type='text' id='amount-input' class='swal2-input' placeholder='amount'>
+    <label for="id">Message</label>
+    <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
+  `;
+  
+  if(referralConditions) {
+    htmlForSwal+=`
+      <div class="alert alert-dark shadow-lg mt-3" role="alert">
+	Spend ${referralConditions.recipient_min_spend / 100} to recieve ${referralConditions.reward_recipient / 100}
+      </div> 
+    `;
+  } 
+
   Swal.fire(
     {
       title: "Invoice",
-      html: `
-        <label for="amount">Amount</label>
-        <input name='amount' type='text' id='amount-input' class='swal2-input' placeholder='amount'>
-        <label for="id">Invoice</label>
-        <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
-      `,
+      html: htmlForSwal,
       preConfirm: function() {
         localStorage.setItem("recentInvoiceId", `${Swal.getPopup().querySelector("#id-input").value}`);
         localStorage.setItem("recentAmount", `${Swal.getPopup().querySelector("#amount-input").value}`);
@@ -175,7 +185,6 @@ const doReferral = function() {
       .then(
   function(results) {
     referralConditions = results.referral;
-    showReferralConditions();
   }
       );
     }
@@ -221,7 +230,9 @@ function updateQr(txAmount, invoiceId) {
     }
     Swal.fire(
       {
-	html: `<div class='qr-div-holder'></div>`,
+	html: `<div class='qr-div-holder'></div>
+               <div class="alert alert-dark mt-4">amount: ${txAmount}, message: ${invoiceId}</div>
+        `,
       }
     );
     var length = document.querySelector(".swal2-popup").getBoundingClientRect().width * 0.8;
@@ -243,9 +254,6 @@ function initPage() {
   const apisecret = keysResult["secret"];
   REBATE_FACTOR = parseFloat(keysResult["rebate_percentage"]) ? (parseFloat(keysResult["rebate_percentage"]) / 100 ) : REBATE_FACTOR;
   const currentAsset = keysResult["asset_ticker"];
-  if(urlParamsSet) {
-    updateQr(urlParamsSet.amount, urlParamsSet.invoiceid);
-  }
   function nonce() {
       return Math.floor(new Date().getTime() / 1000);
   }
@@ -283,6 +291,15 @@ function initPage() {
       // emit auth message
       socket.emit('auth', auth);
   });
+
+  postPayDb(
+    "reward/referral_create",
+    {"recipient" : "habetag855@100xbit.com"}
+  ).then(
+    function() {
+      console.log("done!")
+    }
+  );
   
 
   socket.on("info", (arg) => {
@@ -435,6 +452,9 @@ function initPage() {
       email = res.email;
       photo = res.photo;
       console.log(`set photo var - photo is ${photo}`);
+      if(urlParamsSet) {
+	updateQr(urlParamsSet.amount, urlParamsSet.invoiceid);
+      }
       document.querySelector(".profile-card").innerHTML=`
 	<div class="row g-0">
 	  <div class="col-md-4">
@@ -451,6 +471,7 @@ function initPage() {
       updateQr();
     }
   );
+
 }
 
 window.onload = async function() {
