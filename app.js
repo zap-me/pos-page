@@ -123,39 +123,58 @@ const sendRebate = function() {
     {
       title: "Send",
       html: `
-        <label for="recipient">Email</label>
-        <input name='recipientt' type='text' id='recipient-input' class='swal2-input' placeholder='recipient'>
         <label for="amount">Amount</label>
         <input name='amount' type='text' id='amount-input' class='swal2-input' placeholder='amount'>
-        <label for="id">Invoice</label>
+        <label for="id">Message</label>
         <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
       `,
       preConfirm: function() {
         localStorage.setItem("recentInvoiceId", `${Swal.getPopup().querySelector("#id-input").value}`);
         localStorage.setItem("recentAmount", `${Swal.getPopup().querySelector("#amount-input").value}`);
         return {
-          recipient: Swal.getPopup().querySelector("#recipient-input").value,
           txAmount : Swal.getPopup().querySelector("#amount-input").value,
           invoiceId : Swal.getPopup().querySelector("#id-input").value
         };
       },
    }
   ).then(
-    function(res) {
+    async function(res) {
       if (res.isConfirmed && res.value.txAmount !== "") {
-        postPayDb('payment_create', {reason: res.value.invoiceId, recipient: res.value.recipient, amount: parseFloat(res.value.txAmount) * 100, category: "testing", message: 1}).then(
-          function(result) {
-            console.log(`result is ${result.amount}`);
-            if (result.proposal.payment.amount != null) {
-	      Swal.fire(
-		{
-		  title: "Rebate sent!",
-		  icon: "success"
+	await Swal.fire( {
+	  title: "Scan email QR",
+	  html: `<video class="qr-input-stream"></video>`,
+	  willOpen: function() {
+	    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
+	      console.log(`result is ${result}`);
+	      scannedRebateEmail = result;
+	      document.querySelector(".swal2-confirm").click();
+
+	    });
+	    qrScanner.start();
+	  },
+
+	  preConfirm: function() {
+	    console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
+	    return {recipient: scannedRebateEmail, amount: parseFloat(res.value.txAmount) * 100, message: 1, reason: res.value.invoiceId, category: "testing"};
+	  },
+
+	} ).then(
+          function(returnedResult) {
+	    postPayDb('payment_create', returnedResult.value).then(
+	      function(result) {
+		console.log(`result is ${result.amount}`);
+		if (result.proposal.payment.amount != null) {
+		  Swal.fire(
+		    {
+		      title: "Rebate sent!",
+		      icon: "success"
+		    }
+		  );
 		}
-	      );
-            }
+	      }
+	    );
           }
-        );
+        ); 
       }
     }
   );
