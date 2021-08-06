@@ -475,17 +475,12 @@ function initPage() {
 	updateQr(urlParamsSet.amount, urlParamsSet.invoiceid);
       }
       document.querySelector(".profile-card").innerHTML=`
-	<div class="row g-0">
-	  <div class="col-md-4">
-	    <img src="data:image/jpeg;base64,${photo}" class="img-fluid rounded-start fixed-img" alt="...">
-	  </div>
-	  <div class="col-md-8">
-	    <div class="card-body">
-	      <h5 class="card-title">Signed in as ${email}</h5>
-	      <p class="card-text"></p>
-	    </div>
-	  </div>
-	</div>
+            <div class="profile-row">
+	      <img src="data:image/jpeg;base64,${photo}" class="fixed-img" alt="...">
+	      <div class="alert alert-primary profile-desc">
+                user: ${email}
+              </div>
+            </div>
       `;
       updateQr();
     }

@@ -174,10 +174,31 @@ body {
   width: 50%;
 }
 
+.profile-row {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
 .profile-card {
   width: 85vw;
   height: 20vh;
+  display: flex;
+  justify-content: center;
 }
 
 .fixed-img {
+  width: 25%;
+  height: 80%;
+  object-fit: cover;
+  margin-left: 6vw;
+  border-radius: 21px;
+}
+
+.profile-desc {
+  height: 20%;
+  margin-left: 10%;
+
 }
