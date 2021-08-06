@@ -478,7 +478,7 @@ function initPage() {
             <div class="profile-row">
 	      <img src="data:image/jpeg;base64,${photo}" class="fixed-img" alt="...">
 	      <div class="alert alert-primary profile-desc">
-                user: ${email}
+                ${email}
               </div>
             </div>
       `;
