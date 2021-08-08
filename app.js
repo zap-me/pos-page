@@ -83,7 +83,7 @@ const showReferralConditions = function() {
 const invoiceCreate = function() {
   var htmlForSwal = `
     <label for="amount">Amount</label>
-    <input name='amount' type='text' id='amount-input' class='swal2-input' placeholder='amount'>
+    <input name='amount' type='number' id='amount-input' class='swal2-input' placeholder='amount'>
     <label for="id">Message</label>
     <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
   `;
@@ -101,6 +101,7 @@ const invoiceCreate = function() {
       title: "Invoice",
       html: htmlForSwal,
       preConfirm: function() {
+        
         localStorage.setItem("recentInvoiceId", `${Swal.getPopup().querySelector("#id-input").value}`);
         localStorage.setItem("recentAmount", `${Swal.getPopup().querySelector("#amount-input").value}`);
         return {
