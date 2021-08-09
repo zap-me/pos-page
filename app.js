@@ -72,14 +72,6 @@ function doStorage() {
     );
 }
 
-const showReferralConditions = function() {
-  document.querySelector("form").insertAdjacentHTML("beforeend",`
-    <div class="alert alert-dark shadow-lg mt-3" role="alert">
-      Spend ${referralConditions.recipient_min_spend / 100} to recieve ${referralConditions.reward_recipient / 100}
-    </div> 
-  `);
-}
-
 const invoiceCreate = function() {
   var htmlForSwal = `
     <div class="form-group">
@@ -124,6 +116,7 @@ const invoiceCreate = function() {
 }
 
 const sendRebate = function() {
+  var scannedRebateEmail;
   Swal.fire(
     {
       title: "Send",
@@ -272,18 +265,12 @@ function updateQr(txAmount, invoiceId) {
     qrCodeObj.makeCode(code);
 }
 
-function inputChange() {
-    updateQr();
-}
-
 function initPage() {
-  const screenWidth = window.screen.width;
   const socket = io(WS_URL);
   const keysResult = JSON.parse(localStorage.getItem("keys"));
   const apikey = keysResult["apikey"];
   const apisecret = keysResult["secret"];
   REBATE_FACTOR = parseFloat(keysResult["rebate_percentage"]) ? (parseFloat(keysResult["rebate_percentage"]) / 100 ) : REBATE_FACTOR;
-  const currentAsset = keysResult["asset_ticker"];
   function nonce() {
       return Math.floor(new Date().getTime() / 1000);
   }
@@ -511,7 +498,6 @@ window.onload = async function() {
     console.log("There are query params!");
   }
   console.log(queryParams);
-  var length = window.innerWidth * 0.25
   if(localStorage.getItem("keys") == null) {
     doStorage();
   } else {
