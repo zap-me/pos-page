@@ -88,7 +88,7 @@ const invoiceCreate = function() {
     </div>
     <div class="form-group">
       <label for="id">Message</label>
-      <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
+      <input name='id' type='text' id='id-input' class='swal2-input' placeholder='message'>
     </div>
   `;
   
@@ -131,7 +131,7 @@ const sendRebate = function() {
         <label for="amount">Amount</label>
         <input name='amount' type='text' id='amount-input' class='swal2-input' placeholder='amount'>
         <label for="id">Message</label>
-        <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
+        <input name='id' type='text' id='id-input' class='swal2-input' placeholder='message'>
       `,
       preConfirm: function() {
         localStorage.setItem("recentInvoiceId", `${Swal.getPopup().querySelector("#id-input").value}`);
