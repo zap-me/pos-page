@@ -82,10 +82,14 @@ const showReferralConditions = function() {
 
 const invoiceCreate = function() {
   var htmlForSwal = `
-    <label for="amount">Amount</label>
-    <input name='amount' type='number' id='amount-input' class='swal2-input' placeholder='amount'>
-    <label for="id">Message</label>
-    <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
+    <div class="form-group">
+      <label for="amount">Amount</label>
+      <input name='amount' type='number' id='amount-input' class='swal2-input' placeholder='amount'>
+    </div>
+    <div class="form-group">
+      <label for="id">Message</label>
+      <input name='id' type='text' id='id-input' class='swal2-input' placeholder='invoice id'>
+    </div>
   `;
   
   if(referralConditions) {
@@ -183,25 +187,31 @@ const sendRebate = function() {
 }
 
 const doReferral = function() {
+  var scannedReferral;
   Swal.fire(
     {
       title: "Claim referral",
       allowEnterKey: true,
       allowOutsideClick: false,
       showCancelButton: true,
-      html: `<input type='text' id='referral-code' class='swal2-input' placeholder='referral code'>`,
+      html: `<video class="qr-input-stream"></video>`,
+      willOpen: function() {
+	const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
+	  console.log(`result is ${result}`);
+	  scannedReferral = result;
+	  document.querySelector(".swal2-confirm").click();
+
+	});
+	qrScanner.start();
+      },
       preConfirm: function() {
-  const referralToken = Swal.getPopup().querySelector("#referral-code").value;
-  if(!referralToken) {
-    Swal.showValidationMessage('Please enter a referral code');
-  } else {
-    return referralToken;
-  }
+	console.log(`scannedReferral is ${scannedReferral}`);
+	return {referral: scannedReferral};
       },
     }
   ).then((res) => {
     if(res.isConfirmed) {
-      postPayDb('reward/referral_validate', {token: res.value})
+      postPayDb('reward/referral_validate', {token: res.value.scannedReferral})
       .then(
   function(results) {
     referralConditions = results.referral;
