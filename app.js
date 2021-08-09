@@ -95,7 +95,7 @@ const invoiceCreate = function() {
   if(referralConditions) {
     htmlForSwal+=`
       <div class="alert alert-dark shadow-lg mt-3" role="alert">
-	Spend ${referralConditions.recipient_min_spend / 100} to recieve ${referralConditions.reward_recipient / 100}
+  Spend ${referralConditions.recipient_min_spend / 100} to recieve ${referralConditions.reward_recipient / 100}
       </div> 
     `;
   } 
@@ -145,39 +145,39 @@ const sendRebate = function() {
   ).then(
     async function(res) {
       if (res.isConfirmed && res.value.txAmount !== "") {
-	await Swal.fire( {
-	  title: "Scan email QR",
-	  html: `<video class="qr-input-stream"></video>`,
-	  willOpen: function() {
-	    const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
-	      console.log(`result is ${result}`);
-	      scannedRebateEmail = result;
-	      document.querySelector(".swal2-confirm").click();
+  await Swal.fire( {
+    title: "Scan email QR",
+    html: `<video class="qr-input-stream"></video>`,
+    willOpen: function() {
+      const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
+        console.log(`result is ${result}`);
+        scannedRebateEmail = result;
+        document.querySelector(".swal2-confirm").click();
 
-	    });
-	    qrScanner.start();
-	  },
+      });
+      qrScanner.start();
+    },
 
-	  preConfirm: function() {
-	    console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
-	    return {recipient: scannedRebateEmail, amount: parseFloat(res.value.txAmount) * 100, message: 1, reason: res.value.invoiceId, category: "testing"};
-	  },
+    preConfirm: function() {
+      console.log(`scannedRebateEmail is ${scannedRebateEmail}`);
+      return {recipient: scannedRebateEmail, amount: parseFloat(res.value.txAmount) * 100, message: 1, reason: res.value.invoiceId, category: "testing"};
+    },
 
-	} ).then(
+  } ).then(
           function(returnedResult) {
-	    postPayDb('payment_create', returnedResult.value).then(
-	      function(result) {
-		console.log(`result is ${result.amount}`);
-		if (result.proposal.payment.amount != null) {
-		  Swal.fire(
-		    {
-		      title: "Rebate sent!",
-		      icon: "success"
-		    }
-		  );
-		}
-	      }
-	    );
+      postPayDb('payment_create', returnedResult.value).then(
+        function(result) {
+    console.log(`result is ${result.amount}`);
+    if (result.proposal.payment.amount != null) {
+      Swal.fire(
+        {
+          title: "Rebate sent!",
+          icon: "success"
+        }
+      );
+    }
+        }
+      );
           }
         ); 
       }
@@ -196,17 +196,17 @@ const doReferral = function() {
       showCancelButton: true,
       html: `<video class="qr-input-stream"></video>`,
       willOpen: function() {
-	const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
-	  console.log(`result is ${result}`);
-	  scannedReferral = result;
-	  document.querySelector(".swal2-confirm").click();
+  const qrScanner = new QrScanner(document.querySelector(".qr-input-stream"), function(result) {
+    console.log(`result is ${result}`);
+    scannedReferral = result;
+    document.querySelector(".swal2-confirm").click();
 
-	});
-	qrScanner.start();
+  });
+  qrScanner.start();
       },
       preConfirm: function() {
-	console.log(`scannedReferral is ${scannedReferral}`);
-	return {referral: scannedReferral};
+  console.log(`scannedReferral is ${scannedReferral}`);
+  return {referral: scannedReferral};
       },
     }
   ).then((res) => {
@@ -260,7 +260,7 @@ function updateQr(txAmount, invoiceId) {
     }
     Swal.fire(
       {
-	html: `<div class='qr-div-holder'></div>
+  html: `<div class='qr-div-holder'></div>
                <div class="alert alert-dark mt-4">amount: ${txAmount}, message: ${invoiceId}</div>
         `,
       }
@@ -483,12 +483,12 @@ function initPage() {
       photo = res.photo;
       console.log(`set photo var - photo is ${photo}`);
       if(urlParamsSet) {
-	updateQr(urlParamsSet.amount, urlParamsSet.invoiceid);
+  updateQr(urlParamsSet.amount, urlParamsSet.invoiceid);
       }
       document.querySelector(".profile-card").innerHTML=`
             <div class="profile-row">
-	      <img src="data:image/jpeg;base64,${photo}" class="fixed-img" alt="...">
-	      <div class="alert alert-primary profile-desc">
+        <img src="data:image/jpeg;base64,${photo}" class="fixed-img" alt="...">
+        <div class="alert alert-primary profile-desc">
                 ${email}
               </div>
             </div>
